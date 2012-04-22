@@ -3,8 +3,8 @@
   "version": "1.0",
   "description": "Adds automatic profanity filtering to Hulu videos that are subtitled.",
   "icons": {
-    "128": "images/webmail-extension-128.png",
-    "16": "images/webmail-extension-16.png"
+    "128": "images/icon-128.png",
+    "16": "images/icon-16.png"
   },
   "homepage_url": "http://jacobwg.com/projects/clean-hulu/",
   "permissions": [ "tabs" ],
