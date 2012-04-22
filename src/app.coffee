@@ -1,36 +1,24 @@
-pageinit = ->
-  info = (message) ->
-    Notification.info message
 
-  error = (message) ->
-    Notification.error message
+if document.player or document.getElementById("player")
+  chrome.extension.sendRequest
+    type: "enable"
+  , (response) ->
 
-  success = (message) ->
-    Notification.success message
+  xhr = new XMLHttpRequest()
+  xhr.open "GET", chrome.extension.getURL("/scripts/filter.js"), true
+  xhr.onreadystatechange = ->
+    return  unless xhr.readyState is 4
+    window.baseUrl = "http://tmfdb.org"
+    s = document.createElement("script")
+    s.setAttribute "type", "text/javascript"
+    s.setAttribute "charset", "UTF-8"
+    s.text = xhr.responseText
+    document.documentElement.appendChild s
 
-  info "Filter loading..."
-
-  window.h = new HuluVideo
-  if !h.is_video or !h.has_cid
-    error 'Oops - this is not a valid Hulu video page...'
-  else
-    h.bind 'change:subtitles', ->
-      info 'Subtitles loaded successfully - parsing for profanity...'
-    h.bind 'no:subtitles', ->
-      error 'This video does not have subtitles - we cannot filter...'
-    h.bind 'change:blocklist', ->
-      success 'Success!  Your video is filtered...'
-      muter = new Muter(h.blocklist)
-      muter.rebuild()
-      muter.startRebuildTesting()
-      window.muter = muter
-    h.load_subtitles()
-
-if window.HuluFilterLoaded
-  info 'The filter is already running...'
-else
-  if document.readyState is "complete"
-    window.setTimeout(pageinit, 1000)
-  else if window.addEventListener
-      window.addEventListener 'load', pageinit, false
-window.HuluFilterLoaded = true
+  xhr.send()
+  chrome.extension.onRequest.addListener (request, sender, sendResponse) ->
+    #if request.type is "stop"
+      #status.set("status", "stop")
+    #else if request.type is "restart"
+      #status.set("status", "start")
+    sendResponse {}
