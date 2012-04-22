@@ -1,15 +1,37 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+var tabDisabled = {};
 
-// Called when the url of a tab changes.
-function checkForValidUrl(tabId, changeInfo, tab) {
-  // If the letter 'g' is found in the tab's URL...
-  if (tab.url.indexOf('hulu.com') > -1) {
-    // ... show the page action.
-    chrome.pageAction.show(tabId);
+function sendToTab(tab, message) {
+  chrome.tabs.sendRequest(tab.id, message, function(response) {});
+}
+
+chrome.pageAction.onClicked.addListener(function(tab) {
+  var disabled = tabDisabled[tab.id] || false;
+
+  if (disabled) {
+    chrome.pageAction.setIcon({path: "icon-19.png", tabId: tab.id});
+    chrome.pageAction.setTitle({title: "Click to Enable Hulu Filter", tabId: tab.id});
+    tabDisabled[tab.id] = false;
+    sendToTab(tab, {
+      type: 'restart'
+    });
+  } else {
+    chrome.pageAction.setIcon({path: "icon-19-disabled.png", tabId: tab.id});
+    chrome.pageAction.setTitle({title: "Click to Enable Hulu Filter", tabId: tab.id});
+    tabDisabled[tab.id] = true;
+    sendToTab(tab, {
+      type: 'start'
+    });
   }
-};
+});
 
-// Listen for any changes to the URL of any tab.
-chrome.tabs.onUpdated.addListener(checkForValidUrl);
+function msg(title, message) {
+  notification = webkitNotifications.createNotification('48.png', title, message);
+  notification.show();
+  return notification;
+}
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if (request.type == "msg") msg(request.title, request.message);
+  if (request.type == "enable") chrome.pageAction.show(sender.tab.id);
+  sendResponse({});
+});

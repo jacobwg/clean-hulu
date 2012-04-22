@@ -7,15 +7,15 @@
     "16": "images/webmail-extension-16.png"
   },
   "homepage_url": "http://jacobwg.com/projects/clean-hulu/",
-  "permissions": [ "tabs" ],
+  "permissions": [ "tabs", "notifications", "http://query.yahooapis.com/*" ],
   "background": {
     "page": "background.html"
   },
   "page_action": {
     "default_icon" : "icon-19.png",
-    "default_title": "Do action",    // optional; shown in tooltip
-    "default_popup": "popup.html"    // optional
+    "default_title": "Click to Disable Hulu Filter"
   },
+  "web_accessible_resources": [ "hulu-filter/runner/application.js"  ],
   "content_scripts" : [
     {
       "matches" : [
