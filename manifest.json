@@ -1,6 +1,6 @@
 {
   "name": "Clean Hulu Filter",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Adds automatic profanity filtering to Hulu videos that are subtitled.",
   "icons": {
     "128": "images/icon-128.png",
